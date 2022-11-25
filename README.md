@@ -288,6 +288,7 @@ ggplot(data = data) + #llamamos a la función ggplot y especificamos la tabla a 
     fill     = " ", #Que la leyenda no tenga títulos
     caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
 ```
-![image](https://user-images.githubusercontent.com/95062993/203910802-b44e2b21-1ffe-49de-a719-6e9e59bde635.png)
+![image](https://user-images.githubusercontent.com/95062993/203910970-826aa3cd-6061-4fff-813c-846ef7bbcb8d.png)
+
 
 
