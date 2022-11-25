@@ -559,7 +559,8 @@ ggplot(data) +
     caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
 
 ```
-![image](https://user-images.githubusercontent.com/95062993/204060418-e2a97c29-9672-40fb-8e66-d1b5db54a1c6.png)
+![image](https://user-images.githubusercontent.com/95062993/204060540-20ab5cd5-0e44-461f-ae4f-7c65a2a388f7.png)
+
 
 
 ```
