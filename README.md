@@ -141,7 +141,13 @@ ggplot(data = data) +          # set de datos
     mapping = aes(x = fecha),     # fecha al eje x
     binwidth = 1)+                     # casos por día
   labs(title = "Casos diarios DENGUE")                # título
+  
+```
 
+![image](https://user-images.githubusercontent.com/95062993/204058161-c0311c46-6a67-46ed-8116-0c63f11d4e89.png)
+
+
+```
 # semanal
 ggplot(data = data) +          # configuramos el set de datos 
   geom_histogram(                      # tipo histograma
@@ -149,18 +155,37 @@ ggplot(data = data) +          # configuramos el set de datos
     binwidth = 7)+                   # casos por cada 7 días
   labs(title = "Casos semanales DENGUE") # título
 
-# monthly 
+```
+
+![image](https://user-images.githubusercontent.com/95062993/204058218-cff165ce-f603-4023-ae4c-b73b8b0238a7.png)
+
+```
+# mensual 
 ggplot(data = data) +          # configuramos el set de datos 
   geom_histogram(                      # tipo histograma
     mapping = aes(x = fecha),   # fecha al eje x
     binwidth = 30.41)+                   # casos cada 30.41 día (mensual)
   labs(title = "Casos Mensuales DENGUE") # Título
+  
+ 
+```
+
+![image](https://user-images.githubusercontent.com/95062993/204058245-c1d45c94-d4ed-42f0-95f5-43fe5e9655bb.png)
+
+De la siguiente manera podemos obtener la fecha del primer y del último caso en nuestro set de datos
+
+```
 
 #### DETERMINAR EL PRIMER CASO
 format(min(data$fecha, na.rm=T), "%A %d %b, %Y")
 #### DETERMINAR EL ÚLTIMO CASO
 format(max(data$fecha, na.rm=T), "%A %d %b, %Y")
+```
 
+
+Graficamos una curva epidémica más personalizada y visualmente más atractiva
+
+```
 # TOTALIZAR DATOS DE MANERA SEMANAL (INICIANDO LUNES) Y CREANDO CURVA EPIDEMIOLÓGICA
 #############################
 # Definir una secuencia semanal (7 días)
