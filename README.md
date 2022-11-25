@@ -561,15 +561,38 @@ ggplot(data) +
 ```
 ![image](https://user-images.githubusercontent.com/95062993/204060540-20ab5cd5-0e44-461f-ae4f-7c65a2a388f7.png)
 
+A continuación se construirá una curva de casos acumulativa.
+Reto: EL código contiene las instrucciones para generar la curva de casos acumulativo. Intente personalizarla (Configurar títulos, subtítulos, temas, etc)
 
+Primero, debemos construir a partir de nuestro datos (data) un set de datos con los casos acumulativos por fecha
+```
+conteo_acumulativo <- data %>% 
+  count(fecha) %>%                # count of rows per day (returned in column "n")   
+  mutate(                         
+    casos_acumulativo = cumsum(n)       # new column of the cumulative number of rows at each date
+  )
 
+head(conteo_acumulativo)
+
+       fecha n casos_acumulativo
+1 2022-01-01 2                 2
+2 2022-01-02 2                 4
+3 2022-01-03 2                 6
+4 2022-01-05 2                 8
+5 2022-01-06 2                10
+6 2022-01-08 2                12
 ```
 
+Construímos nuestra curva de datos acumulativos con el set de datos construído anteriormente (conteo_acumulativo)
 ```
-
-
+#graficando los casos acumulativos
+ggplot()+
+  geom_line(
+    data = conteo_acumulativo,
+    aes(x = fecha, y = casos_acumulativo ),
+    size = 2,
+    color = "blue")
 ```
-
-```
+![image](https://user-images.githubusercontent.com/95062993/204061509-12fb9098-c6bd-4591-b7ce-159bdc7eff14.png)
 
 
