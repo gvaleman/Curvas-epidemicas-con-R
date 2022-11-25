@@ -32,3 +32,15 @@ p5 = data.frame(Den = rep("D3", 200),
 data = rbind(p1,p2,p3,p4, p5) # uniendo todas las tablas para crear un solo set de datos
 remove(p1, p2, p3, p4, p5) #eliminar las tablas creadas para construir la dataframe y que ya no servirán
 ```
+
+A partir de los datos, se puede generar un histograma simple para visualizar el curso del brote durante el año
+
+```
+ggplot(data = data)+
+  geom_histogram(aes(x = fecha))
+```
+![image](https://user-images.githubusercontent.com/95062993/203907834-7f2e8427-7cd9-4bb5-966d-cec519929b14.png)
+
+```
+
+```
