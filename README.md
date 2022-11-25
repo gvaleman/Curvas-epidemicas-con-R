@@ -237,6 +237,57 @@ scale_x_date(
   
   # date label format
   date_labels = "%a\n%d %b\n%Y")        # día, encima de la abreviatura del mes, encima del año de 2 dígitos
-  
 
 ```
+
+Es útil visualizar una curva epidemiológica con datos agrupados. Los datos que se pueden agrupar pueden ser el sexo, la procedencia (Municipios, provicia), alguna condición, grupos etarios, entre otros. En esta ocación se construirá una curva epidemiológica agrupada por los serotipos de dengue
+
+```
+ggplot(data = data) + #llamamos a la función ggplot y especificamos la tabla a utilizar
+  
+  # hacer un histograma: especificar los puntos de ruptura: comienza el lunes anterior al primer caso, finaliza el lunes posterior al último caso
+  geom_histogram(
+    
+    # mapping aesthetics
+    mapping = aes(x = fecha, group = Den, fill = Den),
+    
+    # especificar los puntos de quiebre semanal, definido previamente
+    breaks = secuencia_semanal, 
+    closed = "left",
+    alpha=0.7 #Configura la transparencia de las barras 0 es sin color, 1 es full color
+  )+ 
+  
+  scale_fill_manual(values=c("#a0e77d", "#82b6d9", "#ef8677")) + #configuramos los colores de cada barra
+  
+  # x-axis labels
+  scale_x_date(
+    expand            = c(0,0),           # elimine el espacio en el eje x antes y después de las barras
+    date_breaks       = "4 weeks",        # las etiquetas de fecha y las principales líneas de cuadrícula verticales aparecen cada 3 lunes de semana
+    date_minor_breaks = "week",           # líneas verticales menores aparecen todos los lunes de la semana
+    date_labels       = "%a\n%d %b\n%Y")+ # formato de las etiquetas de fecha
+  
+  # y-axis
+  scale_y_continuous(
+    expand = c(0,0))+             # eliminar el exceso de espacio en el eje y por debajo de 0 (alinee el histograma con el eje x)
+  
+  # aesthetic themes
+  theme_minimal()+                # aplicar un tema que simplifique el fondo
+  
+  theme(
+    plot.caption = element_text(hjust = 0,        # ubicar titulos a la izquierda
+                                face = "italic"), # Titulos en letra itálica
+    axis.title = element_text(face = "bold"),
+    legend.position = "top")+    # Títulos en los ejes en Negrita
+  
+  # etiquetas que incluyen subtítulos
+  labs(
+    title    = "Incidencia semanal de casos (semana iniciando lunes)",
+    subtitle = "Tenga en cuenta la alineación de las barras, las líneas de cuadrícula verticales y las etiquetas de los ejes los lunes de la semana",
+    x        = "Semana de inicio de síntomas",
+    y        = "Incidencia de casos reportados por semana",
+    fill     = " ", #Que la leyenda no tenga títulos
+    caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
+```
+![image](https://user-images.githubusercontent.com/95062993/203910802-b44e2b21-1ffe-49de-a719-6e9e59bde635.png)
+
+
