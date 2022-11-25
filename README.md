@@ -4,7 +4,7 @@ Curvas-epidemiologicas-con-R es un script en R que busca brindar una manera no m
 Se construirá un set de datos ficticios en el que se busca simular una serie de casos de los serotipos del dengue durante el 2022.
 ```
 #importando/descargando librerías a utilizar
-#install.packages("pacman") #una vez instalada esta librería se puede eliminar la línea de comando
+install.packages("pacman") #una vez instalada esta librería se puede eliminar la línea de comando
 
 #importando e instalando las librarías a utilizas con la librería "pacman"
 pacman::p_load(
