@@ -510,10 +510,65 @@ ggplot(data) +
 ```
 ![image](https://user-images.githubusercontent.com/95062993/204059779-3aa3b85c-04c0-4d8d-bf9d-09ab94e81102.png)
 
+Curva epidmémica total en el fondo de la faceta.
+
+Para mostrar la curva epidémica total en el fondo de cada faceta, agregue la función gghighlight() con paréntesis vacíos al ggplot. Esto es del paquete gghighlight. Tenga en cuenta que el máximo del eje y en todas las facetas ahora se basa en el pico de toda la epidemia. Hay más ejemplos de este paquete en la página de consejos de ggplot.
+```
+ggplot(data) + 
+  
+  geom_histogram(
+    mapping = aes(
+      x = fecha,
+      group = Den,
+      fill = Den),  
+    color = "black",  
+    breaks = secuencia_semanal,
+    closed = "left" ) +  
+
+    gghighlight::gghighlight()+ #este argumento/función indica graficar todos los casos
+  
+  scale_x_date(
+    expand            = c(0,0),        
+    date_breaks       = "2 months",    
+    date_minor_breaks = "1 month",     
+    date_labels       = "%b\n'%y") + 
+  
+  scale_y_continuous(expand = c(0,0)) +
+  
+  theme_minimal() +
+  
+  theme(
+    plot.caption = element_text(face = "italic", hjust = 0), 
+    axis.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    strip.text = element_text(face = "bold", size = 10),
+    strip.background = element_rect(fill = "grey")) +
+  
+  # En esta sección se especifica que se desean hacer varias facetas a partir de la columna Den
+  facet_wrap(
+    ~Den,
+    ncol = 3,
+    strip.position = "top" ) +             
+  
+  labs(
+    title    = "Incidencia semanal de los casos de Dengue",
+    subtitle = "Las semanas inician en Lunes",
+    fill     = "Serotipos",                                   
+    x        = "Semanas de el inicio de síntomas",
+    y        = "Incidencia de casos reportados por semana",
+    caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
+
+```
+![image](https://user-images.githubusercontent.com/95062993/204060418-e2a97c29-9672-40fb-8e66-d1b5db54a1c6.png)
+
 
 ```
 
 ```
 
+
+```
+
+```
 
 
