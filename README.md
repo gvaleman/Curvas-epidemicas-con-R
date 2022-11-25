@@ -31,6 +31,15 @@ p5 = data.frame(Den = rep("D3", 200),
   
 data = rbind(p1,p2,p3,p4, p5) # uniendo todas las tablas para crear un solo set de datos
 remove(p1, p2, p3, p4, p5) #eliminar las tablas creadas para construir la dataframe y que ya no servirán
+head(data)
+
+  Den      fecha
+1  D1 2022-01-01
+2  D1 2022-01-02
+3  D1 2022-01-03
+4  D1 2022-01-05
+5  D1 2022-01-06
+6  D1 2022-01-08
 ```
 
 A partir de los datos, se puede generar un histograma simple para visualizar el curso del brote durante el año
