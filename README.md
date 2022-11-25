@@ -55,7 +55,7 @@ Con los datos se pueden crear informes simples agrupando el serotipo de dengue y
 ```
 conteo_de_datos <- data %>% 
   group_by(Den, fecha = as.character(fecha)) %>% 
-  summarise(n_cases = dplyr::n()) %>% ungroup()
+  summarise(n_cases = dplyr::n())
 
 conteo_de_datos$fecha = as.Date( conteo_de_datos$fecha) #convirtiendo a tipo fecha la columna fecha
 conteo_de_datos
@@ -82,22 +82,22 @@ conteo_de_datos_semanal <- data
 conteo_de_datos_semanal$semana <- format(data$fecha, "%V")
 
 conteo_de_datos_semanal %>%
-  group_by(Den, fecha = as.character(semana)) %>% 
-  summarise(n_cases = dplyr::n()) %>% ungroup()
-
+  group_by(Den, semana = as.character(semana)) %>% 
+  summarise(n_cases = dplyr::n())
+  
 # A tibble: 68 × 3
-   Den   fecha n_cases
-   <chr> <chr>   <int>
- 1 D1    01         10
- 2 D1    02          8
- 3 D1    03         10
- 4 D1    04         10
- 5 D1    05         10
- 6 D1    06         10
- 7 D1    07         10
- 8 D1    08          8
- 9 D1    09         10
-10 D1    10         10
+   Den   semana n_cases
+   <chr> <chr>    <int>
+ 1 D1    01          10
+ 2 D1    02           8
+ 3 D1    03          10
+ 4 D1    04          10
+ 5 D1    05          10
+ 6 D1    06          10
+ 7 D1    07          10
+ 8 D1    08           8
+ 9 D1    09          10
+10 D1    10          10
 # … with 58 more rows
 ```
 
@@ -108,11 +108,12 @@ conteo_de_datos_mensual <- data
 conteo_de_datos_mensual$mes <- format(data$fecha, "%m")
 
 conteo_de_datos_mensual %>%
-  group_by(Den, fecha = as.character(mes)) %>% 
-  summarise(n_cases = dplyr::n()) %>% ungroup()
-
+  group_by(Den, mes = as.character(mes)) %>% 
+  summarise(n_cases = dplyr::n())
+  
 # A tibble: 17 × 3
-   Den   fecha n_cases
+# Groups:   Den [3]
+   Den   mes   n_cases
    <chr> <chr>   <int>
  1 D1    01         44
  2 D1    02         38
@@ -132,7 +133,110 @@ conteo_de_datos_mensual %>%
 16 D3    11         50
 17 D3    12         42
 ```
+Con ggplot2 se pueden crear curvas epidemiológicas muy atractivas y bastante personalizables. A continuación se construye una curva a partir de la tabla "data"
 
 ```
+ggplot(data = data) +          # set de datos
+  geom_histogram(                      # tipo histograma
+    mapping = aes(x = fecha),     # fecha al eje x
+    binwidth = 1)+                     # casos por día
+  labs(title = "Casos diarios DENGUE")                # título
+
+# semanal
+ggplot(data = data) +          # configuramos el set de datos 
+  geom_histogram(                      # tipo histograma
+    mapping = aes(x = fecha),   # fecha al eje x
+    binwidth = 7)+                   # casos por cada 7 días
+  labs(title = "Casos semanales DENGUE") # título
+
+# monthly 
+ggplot(data = data) +          # configuramos el set de datos 
+  geom_histogram(                      # tipo histograma
+    mapping = aes(x = fecha),   # fecha al eje x
+    binwidth = 30.41)+                   # casos cada 30.41 día (mensual)
+  labs(title = "Casos Mensuales DENGUE") # Título
+
+#### DETERMINAR EL PRIMER CASO
+format(min(data$fecha, na.rm=T), "%A %d %b, %Y")
+#### DETERMINAR EL ÚLTIMO CASO
+format(max(data$fecha, na.rm=T), "%A %d %b, %Y")
+
+# TOTALIZAR DATOS DE MANERA SEMANAL (INICIANDO LUNES) Y CREANDO CURVA EPIDEMIOLÓGICA
+#############################
+# Definir una secuencia semanal (7 días)
+secuencia_semanal <- seq.Date(
+  from = floor_date(min(data$fecha, na.rm=T),  "week", week_start = 1), # Lunes antes del primer caso
+  to   = ceiling_date(max(data$fecha, na.rm=T), "week", week_start = 1), # Lunes después del primer caso
+  by   = "week")    # los bloques son de 7 días
+
+ggplot(data = data) + #llamamos a la función ggplot y especificamos la tabla a utilizar
+
+  # hacer un histograma: especificar los puntos de ruptura: comienza el lunes anterior al primer caso, finaliza el lunes posterior al último caso
+  geom_histogram(
+    
+    # mapping aesthetics
+   mapping = aes(x = fecha),  # fecha al eje X
+    
+    # especificar los puntos de quiebre semanal, definido previamente
+    breaks = secuencia_semanal, 
+    
+    closed = "left",  # contar casos desde el inicio del punto de interrupción
+    
+    # bars
+    color = "darkblue",     # color de la linea que bordea las barras
+    fill = "lightblue"      # color de las barras
+  )+ 
+  
+  # x-axis labels
+  scale_x_date(
+    expand            = c(0,0),           # elimine el espacio en el eje x antes y después de las barras
+    date_breaks       = "4 weeks",        # las etiquetas de fecha y las principales líneas de cuadrícula verticales aparecen cada 3 lunes de semana
+    date_minor_breaks = "week",           # líneas verticales menores aparecen todos los lunes de la semana
+    date_labels       = "%a\n%d %b\n%Y")+ # formato de las etiquetas de fecha
+  
+  # y-axis
+  scale_y_continuous(
+    expand = c(0,0))+             # eliminar el exceso de espacio en el eje y por debajo de 0 (alinee el histograma con el eje x)
+  
+  # aesthetic themes
+  theme_minimal()+                # aplicar un tema que simplifique el fondo
+  
+  theme(
+    plot.caption = element_text(hjust = 0,        # ubicar titulos a la izquierda
+                                face = "italic"), # Titulos en letra itálica
+    axis.title = element_text(face = "bold"))+    # Títulos en los ejes en Negrita
+  
+  # etiquetas que incluyen subtítulos
+  labs(
+    title    = "Incidencia semanal de casos (semana iniciando lunes)",
+    subtitle = "Tenga en cuenta la alineación de las barras, las líneas de cuadrícula verticales y las etiquetas de los ejes los lunes de la semana",
+    x        = "Semana de inicio de síntomas",
+    y        = "Incidencia de casos reportados por semana",
+    caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
+
+```
+![image](https://user-images.githubusercontent.com/95062993/203910029-f2cb9b4f-b3c4-4e42-8191-5885162937af.png)
+
+La curva epidemiológica anterior fué creada en semanas que inician el día LUNES, si se dea construir la curva con semanas que inicien en DOMINGO se debe reemplazar la sección "scale_x_date" con el código a continuación:
+
+```
+scale_x_date(
+  expand = c(0,0),
+
+  # especificar el intervalo de las etiquetas de fecha y las principales líneas de cuadrícula verticales
+  breaks = seq.Date(
+    from = floor_date(min(data$fecha, na.rm=T),   "week", week_start = 7), # Domingo ántes del primer caso
+    to   = ceiling_date(max(data$fecha, na.rm=T), "week", week_start = 7), # Domingo después del último caso
+    by   = "4 weeks"),
+  
+  # especificar el intervalo de la línea de cuadrícula vertical menor
+  minor_breaks = seq.Date(
+    from = floor_date(min(data$fecha, na.rm=T),   "week", week_start = 7), # Domingo ántes del primer caso
+    to   = ceiling_date(max(data$fecha, na.rm=T), "week", week_start = 7), # Domingo después del último caso
+    by   = "week"),
+  
+  # date label format
+  date_labels = "%a\n%d %b\n%Y")        # día, encima de la abreviatura del mes, encima del año de 2 dígitos
+  
 
 ```
