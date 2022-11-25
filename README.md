@@ -364,11 +364,156 @@ ggplot(data = data) + #llamamos a la función ggplot y especificamos la tabla a 
 ```
 ![image](https://user-images.githubusercontent.com/95062993/203912618-8e93aa1f-bc06-4b31-9b69-a45fdc7c896b.png)
 
+Ahora trazamos una curva epidémica trazada con líneas, pero agrupando las líneas por grupo/color
+```
+ggplot(data = data) + #llamamos a la función ggplot y especificamos la tabla a utilizar
+ 
+  # hacer un histograma: especificar los puntos de ruptura: comienza el lunes anterior al primer caso, finaliza el lunes posterior al último caso
+  geom_freqpoly(binwidth = 1, size= 1.5,
+    
+    # mapping aesthetics
+    mapping = aes(x = fecha,),
+    
+    # especificar los puntos de quiebre semanal, definido previamente
+    breaks = secuencia_semanal, 
+    closed = "left",
+    alpha=0.7 #Configura la transparencia de las barras 0 es sin color, 1 es full color
+  )+ 
+  
+  scale_fill_manual(values=c("#a0e77d", "#82b6d9", "#ef8677")) + #configuramos los colores de cada barra
+  
+  # x-axis labels
+  scale_x_date(
+    expand            = c(0,0),           # elimine el espacio en el eje x antes y después de las barras
+    date_breaks       = "4 weeks",        # las etiquetas de fecha y las principales líneas de cuadrícula verticales aparecen cada 3 lunes de semana
+    date_minor_breaks = "week",           # líneas verticales menores aparecen todos los lunes de la semana
+    date_labels       = "%a\n%d %b\n%Y")+ # formato de las etiquetas de fecha
+  
+  # y-axis
+  scale_y_continuous(
+    expand = c(0,0))+             # eliminar el exceso de espacio en el eje y por debajo de 0 (alinee el histograma con el eje x)
+  
+  # aesthetic themes
+  theme_minimal()+                # aplicar un tema que simplifique el fondo
+  
+  theme(
+    plot.caption = element_text(hjust = 0,        # ubicar titulos a la izquierda
+                                face = "italic"), # Titulos en letra itálica
+    axis.title = element_text(face = "bold"),
+    legend.position = "top")+    # Títulos en los ejes en Negrita
+  
+  # etiquetas que incluyen subtítulos
+  labs(
+    title    = "Incidencia semanal de casos (semana iniciando lunes)",
+    subtitle = "Tenga en cuenta la alineación de las barras, las líneas de cuadrícula verticales y las etiquetas de los ejes los lunes de la semana",
+    x        = "Semana de inicio de síntomas",
+    y        = "Incidencia de casos reportados por semana",
+    caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
+
+#Curva con lineas agrupadas
+ggplot(data = data) + #llamamos a la función ggplot y especificamos la tabla a utilizar
+  
+  # hacer un histograma: especificar los puntos de ruptura: comienza el lunes anterior al primer caso, finaliza el lunes posterior al último caso
+  geom_freqpoly(binwidth = 0.5, size= 1.5,
+                
+                # mapping aesthetics
+                mapping = aes(x = fecha, colour = Den),
+                
+                # especificar los puntos de quiebre semanal, definido previamente
+                breaks = secuencia_semanal, 
+                closed = "left",
+                alpha=0.7 #Configura la transparencia de las barras 0 es sin color, 1 es full color
+  )+ 
+  
+  scale_fill_manual(values=c("#a0e77d", "#82b6d9", "#ef8677")) + #configuramos los colores de cada barra
+  
+  # x-axis labels
+  scale_x_date(
+    expand            = c(0,0),           # elimine el espacio en el eje x antes y después de las barras
+    date_breaks       = "4 weeks",        # las etiquetas de fecha y las principales líneas de cuadrícula verticales aparecen cada 3 lunes de semana
+    date_minor_breaks = "week",           # líneas verticales menores aparecen todos los lunes de la semana
+    date_labels       = "%a\n%d %b\n%Y")+ # formato de las etiquetas de fecha
+  
+  # y-axis
+  scale_y_continuous(
+    expand = c(0,0))+             # eliminar el exceso de espacio en el eje y por debajo de 0 (alinee el histograma con el eje x)
+  
+  # aesthetic themes
+  theme_minimal()+                # aplicar un tema que simplifique el fondo
+  
+  theme(
+    plot.caption = element_text(hjust = 0,        # ubicar titulos a la izquierda
+                                face = "italic"), # Titulos en letra itálica
+    axis.title = element_text(face = "bold"),
+    legend.position = "top")+    # Títulos en los ejes en Negrita
+  
+  # etiquetas que incluyen subtítulos
+  labs(
+    title    = "Incidencia semanal de casos (semana iniciando lunes)",
+    subtitle = "Tenga en cuenta la alineación de las barras, las líneas de cuadrícula verticales y las etiquetas de los ejes los lunes de la semana",
+    x        = "Semana de inicio de síntomas",
+    y        = "Incidencia de casos reportados por semana",
+    colour = " ",
+    caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
+
+```
+![image](https://user-images.githubusercontent.com/95062993/204058810-8747707d-0aa6-42ff-88a5-5bbf7807592d.png)
+
+
+Construimos un gráfico con diferentes facetas o bloques. Los bloques proceden de la columna "Den" que contiene los serotipos de Dengue. A como se mencionó anteriormente, el agrupamiento puede realizarse por los grupos que interesen según el set de datos que se esté utilizando o la información que se cuente. Los grupos pueden ser Grupos etarios, sexo, provincias, hospital de procedencia, etc. 
+NOTA: Para evitar ser redundante, el siguiente código no contiene comentarios. Se espera que a este punto se sepa la función que realiza cada argumento del código
+
+```
+ggplot(data) + 
+  
+  geom_histogram(
+    mapping = aes(
+      x = fecha,
+      group = Den,
+      fill = Den),  
+    color = "black",  
+    breaks = secuencia_semanal,
+    closed = "left" ) +  
+  
+  scale_x_date(
+    expand            = c(0,0),        
+    date_breaks       = "2 months",    
+    date_minor_breaks = "1 month",     
+    date_labels       = "%b\n'%y") + 
+  
+  scale_y_continuous(expand = c(0,0)) +
+  
+  theme_minimal() +
+  
+  theme(
+    plot.caption = element_text(face = "italic", hjust = 0), 
+    axis.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    strip.text = element_text(face = "bold", size = 10),
+    strip.background = element_rect(fill = "grey")) +
+  
+  # En esta sección se especifica que se desean hacer varias facetas a partir de la columna Den
+  facet_wrap(
+    ~Den,
+    ncol = 3,
+    strip.position = "top" ) +             
+  
+  # labels
+  labs(
+    title    = "Incidencia semanal de los casos de Dengue",
+    subtitle = "Las semanas inician en Lunes",
+    fill     = "Serotipos",                                   
+    x        = "Semanas de el inicio de síntomas",
+    y        = "Incidencia de casos reportados por semana",
+    caption  = stringr::str_glue("n = {nrow(data)} de la tabla data; Los inicios de los casos van desde {format(min(data$fecha, na.rm=T), format = '%a %d %b %Y')} to {format(max(data$fecha, na.rm=T), format = '%a %d %b %Y')}\n{nrow(data %>% filter(is.na(fecha)))} casos a los que les falta la fecha de inicio y no se muestran"))
+
+```
+![image](https://user-images.githubusercontent.com/95062993/204059779-3aa3b85c-04c0-4d8d-bf9d-09ab94e81102.png)
+
 
 ```
 
 ```
-
 
 
 
